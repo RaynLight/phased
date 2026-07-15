@@ -1,0 +1,12 @@
+{
+  "name": "phased",
+  "description": "Sequential, gated phase execution for Claude Code.",
+  "owner": { "name": "Rayn Light" },
+  "plugins": [
+    {
+      "name": "phased",
+      "source": "./",
+      "description": "Sequential, gated phase execution — one fresh subagent per phase, none advancing until build + tests pass."
+    }
+  ]
+}

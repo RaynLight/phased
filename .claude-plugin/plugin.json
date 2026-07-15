@@ -1,0 +1,8 @@
+{
+  "name": "phased",
+  "version": "0.1.0",
+  "description": "Sequential, gated phase execution — implement large features one phase at a time, each in a fresh subagent, none advancing until build + tests pass.",
+  "author": { "name": "Rayn Light" },
+  "keywords": ["phases", "orchestration", "workflow", "gating", "subagents", "automation"],
+  "license": "MIT"
+}
