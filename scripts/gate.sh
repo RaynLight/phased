@@ -111,7 +111,7 @@ LOG=.phased/gate.log
 phase_cost() {
   [ -f .phased/cost.json ] || return 0
   jq -r --arg n "$N" '(.phases[$n] // {}) as $p
-    | (($p.last // $p.end // $p.start // 0) - ($p.start // 0))
+    | (($p.end // $p.last // $p.start // 0) - ($p.start // 0))
     | if . > 0.005 then " (~$\(. * 100 | round / 100))" else "" end' .phased/cost.json 2>/dev/null
 }
 

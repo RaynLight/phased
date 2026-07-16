@@ -57,13 +57,24 @@ if [ -n "$usd" ]; then
   [ -f "$costfile" ] || printf '{}' > "$costfile" 2>/dev/null
   costout=$(jq -r --arg n "$cur" --argjson usd "$usd" --arg st "$status" '
     .phases //= {}
-    # freeze the spend of phases that are no longer current
+    # Freeze the spend of phases that are no longer current — at this fresh
+    # $usd, not the stale .last: the gate advances .current before this tick
+    # runs, so the final-turn cost of the finished phase only surfaces here.
+    # end = last would silently drop it from the phase and run totals.
+    # max() guards a session-cost reset (usd below last).
     | .phases |= with_entries(
         if .key != $n and (.value.end // null) == null and (.value.last // null) != null
-        then .value.end = .value.last else . end)
+        then .value.end = ([.value.last, $usd] | max) else . end)
     | .phases[$n] //= {}
-    # baseline at first sight of the phase; re-baseline if the session counter reset
-    | (if (.phases[$n].start // null) == null or .phases[$n].start > $usd
+    # A current phase that is active again but has an end was resumed after a
+    # failure — drop the stale end so the retry accrues and a repass re-stamps.
+    | (if ($st != "passed" and $st != "failed") then del(.phases[$n].end) else . end)
+    # Baseline at first sight of the phase; re-baseline if the session counter
+    # reset — but never a finished phase (end still set after the del above):
+    # a later session ticks this script with a near-zero usd, and rewriting the
+    # frozen start would inflate end - start into nonsense.
+    | (if (.phases[$n].start // null) == null
+          or ((.phases[$n].end // null) == null and .phases[$n].start > $usd)
        then .phases[$n].start = $usd else . end)
     | (if ($st == "passed" or $st == "failed") and (.phases[$n].end // null) == null
        then .phases[$n].end = $usd

@@ -23,7 +23,7 @@ The task list is the user's live phase board in the TUI. Maintain it for the ent
 
 - Create one task per phase up front. Pending phases: `Phase <n>: <title>`.
 - When a phase starts, set its task to `in_progress` and retitle it `Phase <n>/<total>: <title>`. Only if the phase will fan out or run a workflow, append ` — fan-out` or ` — workflow`; plain phases get no mode tag.
-- The moment a phase passes, mark its task completed AND retitle it `Phase <n>: <title> — $<cost> · <k> attempt(s)` — cost is `(last//end) - start` for that phase from `.phased/cost.json` (omit the `$` part if that file doesn't exist), `<k>` is `attempts + 1`.
+- The moment a phase passes, mark its task completed AND retitle it `Phase <n>: <title> — $<cost> · <k> attempt(s)` — cost is `(end // last) - start` for that phase from `.phased/cost.json` (omit the `$` part if that file doesn't exist), `<k>` is `attempts + 1`. If the phase has no `end` yet, its cost is still settling (the statusline writes `end` on its next tick) — show it as `~$<cost>`, never as exact; if it has no cost.json entry at all, omit the `$` part.
 - If a phase fails, retitle it `Phase <n>: <title> — ✗ failed after <attempts> attempts`.
 - When resuming, create already-passed phases as completed, with their costs if recorded.
 
@@ -58,4 +58,4 @@ While any phase has status `pending` or `running`, take the lowest such `n`:
 
 ## 4. Finish
 
-When every phase is `passed`: delete `.phased/active`, mark all todos completed, and print a short summary — one line per phase (✓ title, attempts used, and its cost from `.phased/cost.json` if that file exists) plus the total count and total cost. Nothing else.
+When every phase is `passed`: delete `.phased/active`, mark all todos completed, and print a short summary — one line per phase (✓ title, attempts used, and its cost from `.phased/cost.json` if that file exists) plus the total count and total cost. Per-phase cost is `(end // last) - start`; a phase without `end` (usually the final one — the statusline stamps it a tick after the gate) gets `~$<cost>`, and the run total gets `~` too if any component did. Nothing else.

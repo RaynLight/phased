@@ -127,7 +127,7 @@ Three native surfaces, no custom panel:
    phased ▓░░░░ 2/5 · API routes · running · ⚙2 general-purpose · $0.31 (run $1.12)
    ```
 
-   One `▓` per passed phase. `⚙2 general-purpose` is the phase's live fan-out workers (subagents / Workflow agents) — they appear while running and collapse away when the phase passes. `$0.31 (run $1.12)` is the current phase's spend and the run total so far; each phase's final cost also lands in the transition message and `.phased/cost.json`. CLI/terminal only. This is **opt-in**: add to your `settings.json`:
+   One `▓` per passed phase. `⚙2 general-purpose` is the phase's live fan-out workers (subagents / Workflow agents) — they appear while running and collapse away when the phase passes. `$0.31 (run $1.12)` is the current phase's spend and the run total so far; each phase's final cost lands in `.phased/cost.json` a tick after its gate passes (the transition message shows an `~` approximation, since the last turn's cost hasn't settled yet at gate time). CLI/terminal only. This is **opt-in**: add to your `settings.json`:
 
    ```json
    { "statusLine": { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/scripts/statusline.sh" } }
